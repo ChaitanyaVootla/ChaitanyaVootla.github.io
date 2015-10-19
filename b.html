@@ -1,0 +1,102 @@
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/main.css" rel="stylesheet">
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<nav class="navbar navbar-default navbar-static">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">YouTube</a>
+          </div>
+		  <div class="col-sm-3 col-md-3">
+			<form class="navbar-form" role="search">
+			<div class="input-group">
+				<input type="text" class="form-control" placeholder="Search" id="srch-term" required>
+				<div class="input-group-btn">
+					<button class="btn btn-default" type="submit">Go</button>
+				</div>
+			</div>
+			</form>
+		</div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li id="menli"><a id="men" value="Men" href="#">Link</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+	  
+	  
+<ul class="list-group" id="list">
+	</ul>
+
+
+<script>
+	// Load the IFrame Player API code asynchronously.
+	var tag = document.createElement('script');
+	tag.src = "https://www.youtube.com/player_api";
+	var firstScriptTag = document.getElementsByTagName('script')[0];
+	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+	// Replace the 'ytplayer' element with an <iframe> and
+	// YouTube player after the API code downloads.
+	var player;
+	var res;
+					function onYouTubePlayerAPIReady() {
+						$.ajax({
+								url: "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostpopular&regionCode=IN&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8",
+								dataType: 'jsonp',
+								type: 'get',
+								success: function(mydata) {
+										res=mydata;
+										
+										for(i=0;i<mydata.items.length;i++){
+											var string='<li class="list-group-item"><div class="row itemrow">';
+											string+='<div class="col-md-5"><div id="ytplayer'+i+'"></div></div>';
+											string+='<div class="col-md-7"><h4>'+mydata.items[i].snippet.title+'</h4>';
+											//string+='<h6>'+mydata.items[i].snippet.description+'</h6>';
+											string+='<a href=https://youtube.com/channel/'+mydata.items[i].snippet.channelId+' target="_blank"><h6>Goto Uploaders Page</h6></a>';
+											string+='<h6>View Count: '+mydata.items[i].statistics.viewCount+'</h6>';
+											string+='<h6>like ratio: '+ Math.round((mydata.items[i].statistics.likeCount/mydata.items[i].statistics.dislikeCount))+'</h6>';
+											string+='</div></div></div></li>'
+											$("#list").append(string);
+											player = new YT.Player('ytplayer'+i, {
+											  height: '225',
+											  width: '450',
+											  videoId: mydata.items[i].id
+											});
+										}
+									}
+								});
+					}
+	function reset(urlin){
+		$("#list").text("");
+		$.ajax({
+								url: "https://www.googleapis.com/youtube/v3/search?part=snippet&q="+$("input#srch-term").val()+"&type=video&videoSyndicated=true&maxResults=20&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8",
+								dataType: 'jsonp',
+								type: 'get',
+								success: function(mydata) {
+										res=mydata;
+										
+										for(i=0;i<mydata.items.length;i++){
+											var string='<li class="list-group-item"><div class="row itemrow">';
+											string+='<div class="col-md-5"><div id="ytplayer'+i+'"></div></div>';
+											string+='<div class="col-md-7"><h4>'+mydata.items[i].snippet.title+'</h4><h6>'+mydata.items[i].snippet.description+'</h6>';
+											string+='<a href=https://youtube.com/channel/'+mydata.items[i].snippet.channelId+' target="_blank"><h6>Goto Uploaders Page</h6></a></div></div>';
+											string+='</div></li>'
+											$("#list").append(string);
+											player = new YT.Player('ytplayer'+i, {
+											  height: '225',
+											  width: '450',
+											  videoId: mydata.items[i].id.videoId
+											});
+										}
+									}
+								});
+	}
+	
+	$("form").submit(function(e){
+					reset();
+					return false;
+				 });
+</script>
