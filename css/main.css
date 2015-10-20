@@ -1,0 +1,42 @@
+.proj{
+	height:200px;
+	border-style: solid;
+	border-color:#333;
+	
+}
+
+.navbar{
+	margin:0px;
+	border-radius:0px;
+}
+
+.navbar-default{
+	background-color:#1F1F1F;
+	border-color:#1F1F1F;
+}
+
+.navbar-default .navbar-brand{
+	color:white;
+}
+
+.navbar-default .navbar-brand:hover{
+	color:white;
+}
+
+.navbar-default .navbar-nav>li>a{
+	color:white;
+}
+
+.navbar-default .navbar-nav>li>a:hover{
+	color:#00B2EE;
+}
+
+.listrow{
+	
+}
+
+.btn-default{
+		background-color:#551A8B;
+		border-color:#551A8B;
+		color:white;
+}

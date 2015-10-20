@@ -8,7 +8,9 @@
           <div class="navbar-header">
             <a class="navbar-brand" href="#">YouTube</a>
           </div>
-		  <div class="col-sm-3 col-md-3">
+		  
+          <div id="navbar" class="navbar-collapse collapse">
+		  <ul class="nav navbar-nav navbar-left">
 			<form class="navbar-form" role="search">
 			<div class="input-group">
 				<input type="text" class="form-control" placeholder="Search" id="srch-term" required>
@@ -17,8 +19,7 @@
 				</div>
 			</div>
 			</form>
-		</div>
-          <div id="navbar" class="navbar-collapse collapse">
+			</ul>
             <ul class="nav navbar-nav navbar-right">
               <li id="menli"><a id="men" value="Men" href="#">Link</a></li>
             </ul>
@@ -49,7 +50,7 @@
 								type: 'get',
 								success: function(mydata) {
 										res=mydata;
-										
+										$("#list").append('<li class="list-group-item"><h3 align="center">Popular Now on YouTube India</h3></li>');
 										for(i=0;i<mydata.items.length;i++){
 											var string='<li class="list-group-item"><div class="row itemrow">';
 											string+='<div class="col-md-5"><div id="ytplayer'+i+'"></div></div>';
