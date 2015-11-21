@@ -31,9 +31,9 @@
 <div class="col-md-6" id="details">
 
 	<h4 style="width:95%"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Location<span style="float:right;">
-	<button class="btn btn-default"><span class="glyphicon glyphicon-zoom-in  zoomin" id="zoomin'+i+'" aria-hidden="true"></span></button>
-	&nbsp;&nbsp;<button class="btn btn-default"><span class="glyphicon glyphicon-zoom-out zoomout"  id="zoomout'+i+'" aria-hidden="true"></span></button>
-	&nbsp;&nbsp;<button class="btn btn-default"><span class="glyphicon glyphicon-refresh refresh" aria-hidden="true"></span></button></span></h4>
+	<button class="btn btn-default  zoomin"><span class="glyphicon glyphicon-zoom-in" id="zoomin'+i+'" aria-hidden="true"></span></button>
+	&nbsp;&nbsp;<button class="btn btn-default zoomout"><span class="glyphicon glyphicon-zoom-out"  id="zoomout'+i+'" aria-hidden="true"></span></button>
+	&nbsp;&nbsp;<button class="btn btn-default refresh"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button></span></h4>
 	<div id="gbox"></div>
 	
 	<div id="extra"></div>
@@ -48,12 +48,13 @@ var prices=[];
 var weights=[];
 var check=[];
 $(document).ready(function() {
-
+	$("#list").append("&nbsp;&nbsp;&nbsp;<b style=\"color:black;\">Loading...</b>");
 	$.ajax({
 		url: "https://zoomcar-ui.0x10.info/api/courier?type=json&query=list_parcel",
 								dataType: 'json',
 								type: 'get',
 								success: function(mydata) {
+									$("#list").text("");
 									data=mydata;
 									console.log(mydata);
 									$("#items").append('<span class="label label-danger">'+mydata.parcels.length+'</span> Items');
