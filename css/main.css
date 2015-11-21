@@ -1,5 +1,5 @@
 .image{
-	height:150px;
+	height:170px;
 	border-radius:5px;
 	box-shadow: 5px 5px 5px #888888;
 }
@@ -10,19 +10,15 @@ body{
 }
 
 #list{
-	margin:100px;
-	margin-top:20px;
+	magin:100px;
 }
 
 .list-group-item{
-	padding:30px;
-	padding-bottom:0px;
-	padding-top:0px;
-	background-image:url('../img/dark_embroidery.png');
+	background-image:url('../img/concrete_wall.png');
 }
 
 .gimage{
-	height:400px;
+	height:300px;
 	width:640px;
 }
 
@@ -51,5 +47,25 @@ body{
 
 .navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover{
 	background-color:#00688B;
+	color:white;
+}
+
+#details{
+	color:black;
+}
+
+img {
+  background: url(../img/loading.gif) 50% no-repeat;
+}
+
+.detailsrow{
+	background-image:url('../img/p.png');
+}
+
+a{
+	color:white;
+}
+
+a:hover{
 	color:white;
 }
