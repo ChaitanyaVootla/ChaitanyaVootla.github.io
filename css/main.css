@@ -1,79 +1,107 @@
-.image{
-	height:170px;
-	border-radius:5px;
-	box-shadow: 5px 5px 5px #888888;
-}
-
-body{
-	background-image:url('../img/upfeathers.png');
-	color:white;
-}
-
-#list{
-	magin:100px;
-}
-
-.list-group-item{
-	background-image:url('../img/concrete_wall.png');
-}
-
-.gimage{
-	height:300px;
-	width:640px;
+.proj{
+	height:200px;
+	border-style: solid;
+	border-color:#333;
+	
 }
 
 .navbar{
 	margin:0px;
-	ackground-color:#33A1C9;
-	background-image:url('../img/concrete_wall.png');
-	color:white;
+	border-radius:0px;
 }
 
+.navbar-default{
+	background-color:#1F1F1F;
+	border-color:#1F1F1F;
+}
 
 .navbar-default .navbar-brand{
-	margin-left:0px;
 	color:white;
 }
+
 .navbar-default .navbar-brand:hover{
+	color:white;
+}
+
+.navbar-default .navbar-brand:active{
 	color:white;
 }
 
 .navbar-default .navbar-nav>li>a{
 	color:white;
 }
+
 .navbar-default .navbar-nav>li>a:hover{
+	color:#00B2EE;
+}
+
+.listrow{
+	
+}
+
+.btn-default{
+		background-color:#551A8B;
+		border-color:#551A8B;
+		color:white;
+}
+
+.btn-default:hover{
+		background-color:#7D26CD;
+		border-color:#7D26CD;
+		color:white;
+}
+
+.btn-default:active{
+		background-color:#7D26CD;
+		border-color:#7D26CD;
+		color:white;
+}
+
+/*.navbar-nav>li{
+	border:solid;
+	border-color:#551A8B;
+	border-radius:4px;
+	border-width:2px;
+	background-color:#1F1F1F;
+}
+
+.navbar-nav>li:hover{
+	border-color:#551A8B;
+}*/
+
+.progress{
+	height:8px;
+	width:300px;
+	margin-bottom:0px;
+	background-color:#EE0000;
+}
+
+#list{
+}
+
+.navbar-form{
+	width:100%;
+}
+
+.navbar-form .input-group .form-control, .navbar-form .input-group .input-group-addon, .navbar-form .input-group .input-group-btn{
+	width:350px;
+}
+
+.user{
+	padding:3px;
+	background-color:#551A8B;
+	border-color:#551A8B;
 	color:white;
 }
 
-.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover{
-	background-color:#00688B;
-	color:white;
+.user:hover{
+	padding:2px;
+	background-color:#551A8B;
+	border-color:#551A8B;
+	color:#00B2EE;
 }
 
-#details{
-	color:black;
-}
-
-img {
-  background: url(../img/loading.gif) 50% no-repeat;
-}
-
-.detailsrow{
-	background-image:url('../img/p.png');
-}
-
-a{
-	color:white;
-}
-
-a:hover{
-	color:white;
-}
-
-.row{
-	margin:0px;
-}
-
-.container{
-	width:98%;
-}
+/*.navbar-nav>li>a{
+	padding-top:10px;
+	padding-bottom:10px;
+}*/
