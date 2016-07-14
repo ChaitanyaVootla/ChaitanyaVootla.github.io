@@ -2,4 +2,4 @@
 
 echo "blaah"
 
-ls -a
+git add . && git commit -m "from build" && git push origin master
