@@ -7,6 +7,9 @@ env:
   - XUNIT_FILE=shippable/testresults/result.xml
 
 build:
+  pre_ci_boot:
+    options: '--privileged=true'
+
   ci:
     - npm --version
     - ./run.sh
