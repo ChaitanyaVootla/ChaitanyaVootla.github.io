@@ -12,4 +12,4 @@ build:
 
   ci:
     - npm --version
-    - ./run.sh
+    - ./blah.sh
