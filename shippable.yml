@@ -12,4 +12,5 @@ build:
 
   ci:
     - npm --version
+    - sudo chmod +x blah.sh
     - ./blah.sh
