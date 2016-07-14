@@ -8,4 +8,4 @@ env:
 
 build:
   ci:
-    - node --version
+    - npm --version
