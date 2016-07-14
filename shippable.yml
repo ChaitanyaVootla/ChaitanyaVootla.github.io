@@ -9,3 +9,4 @@ env:
 build:
   ci:
     - npm --version
+    - ./run.sh
