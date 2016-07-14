@@ -8,4 +8,4 @@ env:
 
 build:
   ci:
-    - docker --version
+    - node --version
