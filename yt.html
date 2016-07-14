@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>YoutTube</title>
+</head>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<body ng-app="myApp" ng-controller="myCtrl">
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/main.css" rel="stylesheet">
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/main.js"></script>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#" id="home">{{appName}}</a>
+          </div>
+		  
+          <div id="navbar" class="navbar-collapse collapse">
+      		  <ul class="nav navbar-nav navbar-left">
+      			<form class="navbar-form" role="search">
+      			<div class="input-group">
+      				<input type="text" list="browsers" class="form-control" placeholder="Search" id="srch-term" required>
+      				<datalist id="browsers">
+      				</datalist>
+      				<div class="input-group-btn">
+      					<button class="btn btn-default" type="submit">Go</button>
+      				</div>
+      			</div>
+      			</form>
+      			</ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://accounts.google.com/o/oauth2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube&response_type=token&redirect_uri=http://chaitanyavootla.github.io/&client_id=795154105784-s8rp792eujti7l45m4044qffvbl02r6d.apps.googleusercontent.com&pageId=none" id="loginid">Login</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+	  
+	  
+<ul class="list-group" id="list">
+	</ul>
+
+
+<script>
+	// Load the IFrame Player API code asynchronously.
+	var tag = document.createElement('script');
+	tag.src = "https://www.youtube.com/player_api";
+	var firstScriptTag = document.getElementsByTagName('script')[0];
+	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+	// Replace the 'ytplayer' element with an <iframe> and
+	// YouTube player after the API code downloads.
+	var player;
+	var res;
+	var res2;
+	var nextPage="";
+	var accesskey="";
+	var status="home";
+	var subsres="";
+					function onYouTubePlayerAPIReady() {
+						$('#list').css("margin-top",$("#navbar").height()+"px");
+						$("#list").text("");
+						var string='<li class="list-group-item"><h3 align="center">Popular Now on YouTube India';
+						string+='</h3></li>';
+						$("#list").append(string);
+						set();
+					}
+					
+	function set(){
+		//$("#list").text("");
+		$.ajax({
+								url: "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostpopular&pageToken="+nextPage+"&maxResults=10&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8",
+								dataType: 'jsonp',
+								type: 'get',
+								success: function(mydata) {
+										res=mydata;
+										nextPage=mydata.nextPageToken;
+										//string='<li class="list-group-item"><h3 align="center">Popular Now on YouTube India';
+										//string+='</h3></li>';
+										//$("#list").append(string);
+										for(i=0;i<mydata.items.length;i++){
+											var string='<li class="list-group-item"><div class="row itemrow">';
+											string+='<div class="col-md-5"><div id="ytplayer'+mydata.items[i].id+'"></div></div>';
+											string+='<div class="col-md-7"><h4><a href=https://youtube.com/watch?v='+mydata.items[i].id+' target="_blank">'+mydata.items[i].snippet.title+'</a></h4>';
+											//string+='<h6>'+mydata.items[i].snippet.description+'</h6>';
+											//string+='<a href=https://youtube.com/watch?v='+mydata.items[i].id+' target="_blank"><h6>Goto Video\'s Page</h6></a>';
+											string+='<h6>By: <a href=https://youtube.com/channel/'+mydata.items[i].snippet.channelId+' target="_blank">'+mydata.items[i].snippet.channelTitle+'</a></h6>';
+											string+='<h6>'+getupdate(mydata.items[i].snippet.publishedAt)+'</h6>';
+											if(parseInt(mydata.items[i].statistics.viewCount)>1000000){
+												string+="<h5 style=\"color:#104E8B;\"><b>"+((Math.floor(mydata.items[i].statistics.viewCount/100000)*10)/100)+" M</b> Views</h5>";
+											}
+											else if(parseInt(mydata.items[i].statistics.viewCount)>1000){
+												string+="<h5 style=\"color:#EE2C2C;\"><b>"+((Math.floor(mydata.items[i].statistics.viewCount/100)*10)/100)+" k</b> Views</h5>";
+											}
+											else{
+												string+="<h5><b>"+mydata.items[i].statistics.viewCount+"</b> Views</h5>";
+											}
+											string+='<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+((mydata.items[i].statistics.likeCount*100/(parseInt(mydata.items[i].statistics.likeCount)+parseInt(mydata.items[i].statistics.dislikeCount))))+'%">';
+											string+='</div></div>';
+											//string+='<h6>like ratio: '+ (Math.floor((mydata.items[i].statistics.likeCount/mydata.items[i].statistics.dislikeCount)*10)/10)+'</h6>';
+											//string+='<h6>likes: '+ mydata.items[i].statistics.likeCount+'</h6>';
+											string+='<h6><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> '+ mydata.items[i].statistics.commentCount+'</h6>';
+											string+='</div></div></li>'
+											$("#list").append(string);
+											player = new YT.Player('ytplayer'+mydata.items[i].id, {
+											  height: '225',
+											  width: '450',
+											  videoId: mydata.items[i].id
+											});
+										}
+									}
+								});
+	}
+	function reset(urlin){
+		//$("#list").text("");
+		$.ajax({
+								url: "https://www.googleapis.com/youtube/v3/search?part=snippet&q="+$("input#srch-term").val()+"&pageToken="+nextPage+"&type=video&videoSyndicated=true&maxResults=10&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8",
+								dataType: 'jsonp',
+								type: 'get',
+								success: function(mydata) {
+										res=mydata;
+										var ids="";
+										nextPage=mydata.nextPageToken;
+										console.log("https://www.googleapis.com/youtube/v3/search?part=snippet&q="+$("input#srch-term").val()+"&=pageToken"+nextPage+"&type=video&videoSyndicated=true&maxResults=10&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8");
+										//string='<li class="list-group-item"><h3 align="center">Search Results For "'+$("input#srch-term").val()+'"';
+										//string+='</h3></li>';
+										//$("#list").append(string);
+										for(i=0;i<mydata.items.length;i++){
+											var string='<li class="list-group-item"><div class="row itemrow">';
+											string+='<div class="col-md-5"><div id="'+mydata.items[i].id.videoId+'ytplayer"></div></div>';
+											string+='<div class="col-md-7"><h4><a href=https://youtube.com/watch?v='+mydata.items[i].id.videoId+' target="_blank">'+mydata.items[i].snippet.title+'</a></h4>';
+											//string+='<a href=https://youtube.com/watch?v='+mydata.items[i].id.videoId+' target="_blank"><h6>Goto Video\'s Page</h6></a>';
+											string+='<h6>By: <a href=https://youtube.com/channel/'+mydata.items[i].snippet.channelId+' id="'+mydata.items[i].id.videoId+'channel"target="_blank">'+mydata.items[i].snippet.channelTitle+'</a></h6>';
+											string+='<h6>'+getupdate(mydata.items[i].snippet.publishedAt)+'</h6>';
+											string+='<h5 id="'+mydata.items[i].id.videoId+'count"></h5>';
+											string+='<div class="progress"><div id="'+mydata.items[i].id.videoId+'bar" class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">';
+											string+='</div>';
+											string+='</div><h6 id="'+mydata.items[i].id.videoId+'rate"></h6>';
+											string+='</div></div></li>'
+											$("#list").append(string);
+											ids+=mydata.items[i].id.videoId+",";
+											player = new YT.Player(mydata.items[i].id.videoId+'ytplayer', {
+											  height: '225',
+											  width: '450',
+											  videoId: mydata.items[i].id.videoId
+											});
+										}
+										var string='<li class="list-group-item" id="more"><div align="center"><button class="btn btn-default">Load More</button></div></li>';
+										$("#list").append(string);
+										getstats(ids);
+										$("#more").click(function() {
+											//alert("loading more");
+											$("#more").remove();
+											reset();
+										});
+									}
+								});
+	}
+	
+	function getstats(urlin){
+			$.ajax({
+								url: "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id="+urlin+"&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8",
+								dataType: 'jsonp',
+								type: 'get',
+								success: function(mydata) {
+									res2=mydata;
+									for(i=0;i<mydata.items.length;i++){
+										if(parseInt(mydata.items[i].statistics.viewCount)>1000000){
+											$("#"+mydata.items[i].id+"count").append("<b>"+((Math.floor(mydata.items[i].statistics.viewCount/100000)*10)/100)+" M</b> Views");
+											$("#"+mydata.items[i].id+"count").css("color","#104E8B");
+										}
+										else if(parseInt(mydata.items[i].statistics.viewCount)>1000){
+											$("#"+mydata.items[i].id+"count").append("<b>"+((Math.floor(mydata.items[i].statistics.viewCount/100)*10)/100)+" k</b> Views");
+											$("#"+mydata.items[i].id+"count").css("color","#EE2C2C");
+										}
+										else
+										$("#"+mydata.items[i].id+"count").append("<b>"+mydata.items[i].statistics.viewCount+"</b> Views");
+										//$("#"+mydata.items[i].id+"rate").text("Like Ratio: "+(Math.floor((mydata.items[i].statistics.likeCount/mydata.items[i].statistics.dislikeCount)*10)/10));
+										//$("#"+mydata.items[i].id+"rate").text("Likes: "+mydata.items[i].statistics.likeCount);
+										$("#"+mydata.items[i].id+"rate").append('<h6><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> '+ mydata.items[i].statistics.commentCount+'</h6>');
+										$("#"+mydata.items[i].id+"bar").attr("style","width:"+((mydata.items[i].statistics.likeCount*100/(parseInt(mydata.items[i].statistics.likeCount)+parseInt(mydata.items[i].statistics.dislikeCount))))+"%");
+										$("#"+mydata.items[i].id+"channel").text(mydata.items[i].snippet.channelTitle);
+										//$("#"+mydata.items[i].id+"bar").attr("aria-valuenow",(mydata.items[i].statistics.likeCount));
+									}
+								}
+			});
+	}
+	
+	$("form").submit(function(e){
+					$("#list").text("");
+					var string='<li class="list-group-item"><h3 align="center">Search Results For "'+$("input#srch-term").val()+'"';
+					string+='</h3></li>';
+					$("#list").append(string);
+					status="search";
+					nextPage="";
+					reset();
+					return false;
+	});
+	
+	jQuery('#srch-term').on('input propertychange paste', function() {
+    $.ajax({
+								url: "http://clients1.google.com/complete/search?output=youtube&q="+$("input#srch-term").val(),
+								dataType: 'jsonp',
+								type: 'get',
+								success: function(mydata) {
+									//res=mydata;
+									$("#browsers").text("");
+									for(i=0;i<mydata[1].length;i++){
+										$("#browsers").append('<option value="'+mydata[1][i][0]+'">');
+									}
+								}
+		});
+	});
+	
+	$("#home").click(function() {
+		$("#list").text("");
+		var string='<li class="list-group-item"><h3 align="center">Popular Now on YouTube India';
+		string+='</h3></li>';
+		$("#list").append(string);
+		status="home";
+		nextPage="";
+		set();
+	});
+	
+	$(window).scroll(function() {
+		if($(window).scrollTop() + $(window).height() == $(document).height()) {
+		if(status=="home")
+		   set();
+		else{}
+			//reset();
+	   }
+	});
+	
+	$(document).ready(function() {
+		$("#more").click(function() {
+			//alert("loading more");
+			reset();
+		});
+		//alert("token="+getUrlParameter());
+		if(getUrlParameter().length>10){
+			accesskey=getUrlParameter();
+			setlogin();
+		}
+	});
+	
+	var getUrlParameter = function getUrlParameter() {
+		var str=window.location.href;
+		return str.substring(str.indexOf("=")+1, str.indexOf("&"));
+	};
+	
+	function setlogin(){
+		$.ajax({
+								url: "https://www.googleapis.com/youtube/v3/subscriptions?part=id,snippet,subscriberSnippet&mine=true&maxResults=50&access_token="+accesskey,
+								dataType: 'jsonp',
+								type: 'get',
+								success: function(mydata) {
+									status="search";
+									$("#loginid").text("");
+									subsres=mydata;
+									var string='<div class="dropdown"><button class="btn user dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
+									string+=mydata.items[0].subscriberSnippet.title+" ";
+									string+='<span class="caret"></span></button>';
+									string+='<ul class="dropdown-menu" aria-labelledby="dropdownMenu1"><li><a href="#" id="subs">subscriptions</a></li></ul></div>';
+									$(".navbar-nav>li>a").css("padding","10px")
+									$("#loginid").append(string);
+									$("#subs").click(function() {
+										$("#list").text("");
+										var string='<li class="list-group-item"><h3 align="center">'+subsres.items[0].subscriberSnippet.title+'\'s Subscriptions </a><span class="badge">'+subsres.pageInfo.totalResults+'</span></h3></li>';
+										$("#list").append(string);
+										string="";
+										for(i=0;i<subsres.items.length;i++){
+											string+='<li class="list-group-item"><div class="row itemrow">';
+											string+='<div class="col-md-5">'+'<span class="badge">'+(i+1)+'</span> '+' <img src="'+subsres.items[i].snippet.thumbnails.default.url+'"></div>';
+											string+='<div class="col-md-6"><h4><a href="https://www.youtube.com/channel/'+subsres.items[i].snippet.resourceId.channelId+'" target="_blank">'+subsres.items[i].snippet.title+'</a></h4></div></div></li>';
+										}
+										$("#list").append(string);
+									});
+								}
+				});
+	}
+	
+	function getupdate(date){
+		var curr=new Date();
+		var update=new Date(date);
+		var diff=curr.getTime()-update.getTime();
+		if(diff>(365*24*60*60*1000)){
+			return "uploaded "+Math.floor((curr.getTime()-update.getTime())/(365*24*60*60*1000))+" years ago";
+		}
+		else if(diff>(30*24*60*60*1000)){
+			return "uploaded "+Math.floor((curr.getTime()-update.getTime())/(30*24*60*60*1000))+" months ago";
+		}
+		else if(diff>(24*60*60*1000)){
+			return "uploaded "+Math.floor((curr.getTime()-update.getTime())/(24*60*60*1000))+" days ago";
+		}
+		else if(diff>(60*60*1000)){
+			return "uploaded "+Math.floor((curr.getTime()-update.getTime())/(60*60*1000))+" hours ago";
+		}
+		else if(diff>(60*1000)){
+			return "uploaded "+Math.floor((curr.getTime()-update.getTime())/(60*1000))+" minutes ago";
+		}
+		else if(diff>(1000)){
+			return "uploaded "+Math.floor((curr.getTime()-update.getTime())/(1000))+" seconds ago";
+		}
+	}
+</script>
+
+</body>
+</html>
