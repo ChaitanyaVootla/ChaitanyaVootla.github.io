@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html lang="en" ng-app="yt">
+  <head>
+    <title>YouTube</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body ng-controller="ytCtrl" data-ng-init="init()">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <script src="js/angular.min.js"></script>
+    <script src="app.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#" id="home">{{title}}</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+    		  <ul class="nav navbar-nav navbar-left">
+      			<form class="navbar-form" role="search">
+        			<div class="input-group">
+        				<input type="text" class="form-control" placeholder="Search" ng-model="searchString"
+                ng-change="loadSuggestions()" required list="suggestionsList">
+        				<datalist id="suggestionsList">
+                    <option ng-repeat="suggestion in suggestions track by $index" value="{{suggestion[0]}}">
+                    </option>
+        				</datalist>
+        				<div class="input-group-btn">
+        					<button class="btn btn-default" type="submit">Go</button>
+        				</div>
+        			</div>
+      			</form>
+    			</ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://accounts.google.com/o/oauth2/
+            auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube
+            &response_type=token&redirect_uri=http://chaitanyavootla.github.io/
+            &client_id=795154105784-s8rp792eujti7l45m4044qffvbl02r6d.apps.googleusercontent.com
+            &pageId=none" id="loginid">Login</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <ul class="list-group" id="list" ng-if="!loading">
+      <li class="list-group-item">
+        <h3 align="center">Popular Now on YouTube
+          <div class="form-group">
+            <select class="form-control" id="sel1" ng-model="regionName" ng-change="set()">
+              <option ng-repeat="country in countrycodes" value="{{country.Code}}">{{country.Name}}</option>
+            </select>
+          </div>
+        </h3>
+      </li>
+      <li ng-repeat="item in results" class="list-group-item">
+        <div class="row itemrow">
+
+          <div class="col-md-6">
+            <div id="player{{item.id}}" align="center"></div>
+          </div>
+
+          <div class="col-md-6">
+            <h4>
+              <a href='https://youtube.com/watch?v={{item.id}}' target="_blank">
+                {{item.snippet.title}}
+              </a>
+            </h4>
+            <h5>
+              <a href='https://youtube.com/channel/{{item.snippet.channelId}}' target="_blank">
+                {{item.snippet.channelTitle}}
+              </a>
+            </h5>
+            <h5>
+              {{getUploadDate(item.snippet.publishedAt)}}
+            </h5>
+            <h5>
+              Views: <b id="views-{{item.id}}">{{getViewCount(item.statistics.viewCount,item.id)}}</b>
+            </h5>
+            <div class="progress" data-toggle="tooltip" data-placement="right" title="{{getLd(item.statistics)}}%">
+              <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0"
+                aria-valuemax="100" style="width: {{getLd(item.statistics)}}%" id="ld-{{item.id}}">
+              </div>
+            </div>
+            <h5>
+              <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+              {{item.statistics.commentCount}}
+            </h5>
+          </div>
+
+        </div>
+      </li>
+    </ul>
+    <div ng-if="loading">
+      <img src="img/rolling (1).svg" class="loading">
+    </div>
+  </body>
+</html>
+
+<script type="text/javascript">
+</script>

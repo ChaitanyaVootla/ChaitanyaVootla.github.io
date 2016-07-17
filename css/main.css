@@ -77,6 +77,7 @@
 }
 
 #list{
+  margin-top: 3%;
 }
 
 .navbar-form{
@@ -105,3 +106,27 @@
 	padding-top:10px;
 	padding-bottom:10px;
 }*/
+
+.loading{
+	position: fixed; /* or absolute */
+  top: 50%;
+  left: 50%;
+}
+
+iframe{
+  display: block;
+  margin: auto;
+}
+
+.million{
+  color: #104E8B;
+}
+
+.thousand{
+  color: #EE2C2C;
+}
+
+.dropdown-menu-right{
+  margin-left: 42%;
+  right: 42%;
+}
