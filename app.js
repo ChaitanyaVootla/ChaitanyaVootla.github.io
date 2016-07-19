@@ -103,7 +103,7 @@ myApp.controller('ytCtrl', function($scope, $http, $sce) {
   $scope.set = function(){
     console.log(document.getElementById("sel1").options[document.getElementById("sel1").selectedIndex].value);
     $scope.region = document.getElementById("sel1").options[document.getElementById("sel1").selectedIndex].value;
-    $scope.regionName = document.getElementById("sel1").options[document.getElementById("sel1").selectedIndex].text;
+    //$scope.regionName = document.getElementById("sel1").options[document.getElementById("sel1").selectedIndex].text;
     console.log($scope.regionName);
     $scope.init();
   }
