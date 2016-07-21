@@ -113,7 +113,7 @@
   left: 50%;
 }
 
-iframe{
+iframe, .ytImage{
   display: block;
   margin: auto;
 }
@@ -129,4 +129,7 @@ iframe{
 .dropdown-menu-right{
   margin-left: 42%;
   right: 42%;
+}
+
+.countriesDropdown{
 }

@@ -32,7 +32,7 @@
                     </option>
         				</datalist>
         				<div class="input-group-btn">
-        					<button class="btn btn-default" type="submit">Go</button>
+        					<button class="btn btn-default" ng-click="search()" type="submit">Go</button>
         				</div>
         			</div>
       			</form>
@@ -62,7 +62,8 @@
         <div class="row itemrow">
 
           <div class="col-md-6">
-            <div id="player{{item.id}}" align="center"></div>
+            <!-- <div id="player{{item.id}}" ng-init="getIframe(item.id)" align="center"></div> -->
+            <img src="{{item.snippet.thumbnails.high.url}}" class="ytImage" height="300" width="500">
           </div>
 
           <div class="col-md-6">

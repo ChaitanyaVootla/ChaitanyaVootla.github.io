@@ -5,6 +5,7 @@ myApp.controller('ytCtrl', function($scope, $http, $sce) {
 	$scope.suggestions = [];
 	$scope.loading = true;
   $scope.region = 'IN';
+  $scope.searchString = '';
   //$scope.regionName = 'India';
 
 	$scope.loadSuggestions = function(){
@@ -16,7 +17,6 @@ myApp.controller('ytCtrl', function($scope, $http, $sce) {
 	}
 
   $scope.init = function(){
-    $scope.searchString = '';
     $scope.nextPageToken = '';
     $scope.loading = true;
     $scope.regionUrl = '&regionCode=' + $scope.region;
@@ -34,6 +34,7 @@ myApp.controller('ytCtrl', function($scope, $http, $sce) {
 
       onYouTubeIframeAPIReady = function () {
         for (var i = response.data.items.length - 1; i >= 0; i--) {
+          //console.log(response.data.items[i]);
           player = new YT.Player('player'+response.data.items[i].id, {
             height: '300',
             width: '500',
@@ -106,5 +107,27 @@ myApp.controller('ytCtrl', function($scope, $http, $sce) {
     //$scope.regionName = document.getElementById("sel1").options[document.getElementById("sel1").selectedIndex].text;
     console.log($scope.regionName);
     $scope.init();
+  }
+
+  $scope.search = function(){
+    $scope.loading = true;
+    var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q="+$scope.searchString/*+"&pageToken="+nextPage*/+"&type=video&videoSyndicated=true&maxResults=10&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8&callback=JSON_CALLBACK";
+    $http.jsonp(url).then(function(response) {
+      var ids = '';
+      for (var i = response.data.items.length - 1; i >= 0; i--) {
+        response.data.items[i].id = response.data.items[i].id.videoId;
+        ids += response.data.items[i].id+',';
+      }
+      $scope.results = response.data.items;
+      console.log(ids);
+      $scope.nextPageToken = response.data.nextPageToken;
+      $scope.loading = false;
+      var urlStats = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id="+ids+"&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8&callback=JSON_CALLBACK";
+      $http.jsonp(urlStats).then(function(responseStats) {
+        for (var i = responseStats.data.items.length - 1; i >= 0; i--) {
+          response.data.items[i].statistics = responseStats.data.items[i].statistics;
+        }
+      });
+    });
   }
 });
