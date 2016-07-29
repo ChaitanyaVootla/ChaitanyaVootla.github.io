@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en" ng-app="ytVideo">
+  <head>
+    <title>YouTube</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body ng-controller="ytVideoCtrl" ng-init="init()">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <script src="js/angular.min.js"></script>
+    <script src="ytVideo.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://www.youtube.com/player_api"></script>
+    <link href='https://fonts.googleapis.com/css?family=Titillium+Web:600'
+      rel='stylesheet' type='text/css'>
+
+    <!--       Navbar      -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a ng-click="goBack()" href="#" ng-if="playing"><span class="glyphicon glyphicon-chevron-left
+            leftArrow navbar-brand" aria-hidden="true"></span></a>
+          <a class="navbar-brand" ng-click="getPopular(false)" href="index.html" id="home">{{title}}</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse searchBar">
+    		  <ul class="nav navbar-nav navbar-left">
+      			<form class="navbar-form" role="search">
+        			<div class="input-group">
+        				<input type="text" class="form-control" placeholder="Search" ng-model="searchString"
+                ng-change="loadSuggestions()" required list="suggestionsList">
+        				<datalist id="suggestionsList">
+                    <option ng-repeat="suggestion in suggestions track by $index" value="{{suggestion[0]}}">
+                    </option>
+        				</datalist>
+        				<div class="input-group-btn">
+        					<button class="btn btn-default" ng-click="go()" type="submit">Go</button>
+        				</div>
+        			</div>
+      			</form>
+    			</ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://accounts.google.com/o/oauth2/
+            auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube
+            &response_type=token&redirect_uri=http://chaitanyavootla.github.io/
+            &client_id=795154105784-s8rp792eujti7l45m4044qffvbl02r6d.apps.googleusercontent.com
+            &pageId=none" id="loginid">Login</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!--       Player Code       -->
+    <div ng-if="!loading">
+      <div class="row playrow">
+        <div class="tpmargin" ng-init="loadIframe()">
+          <div id="asd" align="center">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-2">
+          <img src="{{channel.snippet.thumbnails.medium.url}}" height="150" width="145"
+            align="right" class="channelImg">
+        </div>
+        <div class="col-md-6">
+          <h3>
+            <a href='https://youtube.com/watch?v={{currItem.id}}' target="_blank">
+              {{currItem.snippet.title}}
+            </a>
+          </h3>
+          <h4>
+            <a href='https://youtube.com/channel/{{currItem.snippet.channelId}}' target="_blank">
+              {{currItem.snippet.channelTitle}}
+            </a>
+          </h4>
+          <h4>
+            {{getUploadDate(currItem.snippet.publishedAt)}}
+          </h4>
+          <br>
+          <!-- <h5>
+            <b>Description:</b>
+            <h5>{{currItem.snippet.description.slice("0","200")}}</h5>
+          </h5> -->
+        </div>
+        <div class="col-md-4">
+          <h3>
+            <b id="views-{{currItem.id}}">{{getViewCount(currItem.statistics.viewCount,currItem.id)}}</b>
+            Views
+          </h3>
+          <div class="progress" data-toggle="tooltip" data-placement="right"
+            title="{{getLd(currItem.statistics)}}%">
+            <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0"
+              aria-valuemax="100" style="width: {{getLd(currItem.statistics)}}%" id="ld-{{currItem.id}}">
+            </div>
+          </div>
+          <!-- <h4>
+            <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+            {{currItem.statistics.commentCount}}
+          </h4> -->
+          <h2>
+            <span ng-if="currItem.contentDetails.definition === 'hd'"
+            class="glyphicon glyphicon-hd-video" aria-hidden="true"></span>
+            <span ng-if="currItem.contentDetails.caption === 'true'"
+            class="glyphicon glyphicon-subtitles" aria-hidden="true"></span>
+          </h2>
+        </div>
+      </div>
+    </div>
+    
+    <hr>
+
+      <!--     suggestions   -->
+
+    <div class="row itemrow">
+
+      <div class="col-md-7 channeldet">
+        <ul class="nav nav-tabs nav-justified">
+          <li class="{{tab?'active':''}}" ng-click="setTab('comments')">
+            <a href="" style="{{tab?'background-color:#44a; color: white!important;':
+              'background-color:#eee; color: black!important;'}}">
+            <b>Comments <span class="badge">
+            {{getResultsCount(currItem.statistics.commentCount)}}
+            </span></b></a>
+          </li>
+          <li class="{{tab?'':'active'}}" ng-click="setTab('details',$event)">
+            <a href="" style="{{tab?'background-color:#eee; color: black!important;':
+              'background-color:#44a; color: white!important;'}}">
+            <b>Channel details</b></a>
+          </li>
+        </ul>
+        
+        <div ng-if="!channelLoading && !tab">
+          <br><br>
+          <h4 style="margin-left: 2%;">
+            <b>{{getResultsCount(channel.statistics.subscriberCount)}}</b> Subscribers
+            <br><br><b>{{getResultsCount(channel.statistics.viewCount/
+            channel.statistics.videoCount)}}</b> Average View Count
+          </h4>
+        </div>
+        
+        <div ng-if="!commentsLoading && tab">
+          <br><br>
+          <ul class="list-group">
+            <li ng-repeat="comment in comments" class="list-group-item">
+              <div class="row">
+                <div class="col-md-2">
+                  <img src="{{comment.snippet.topLevelComment.snippet.authorProfileImageUrl}}"
+                    ng-click="play(item)" class="cmntImg" height="60" width="60" align="center"
+                    style="margin-left:25px;">
+                </div>
+                <div class="col-md-10">
+                  <h4 ng-bind-html="sce.trustAsHtml(comment.snippet.topLevelComment.snippet.textDisplay)"
+                  ></h4>
+                  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+                  {{comment.snippet.topLevelComment.snippet.likeCount}}<br><br>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="col-md-5" ng-if="!relatedLoading">
+        <h4 style="margin-left: 2%;"><b>Related Content</b></h4>
+        <li ng-repeat="item in results" class="list-group-item noleftpad" ng-if="!relatedLoading">
+          <div class="row itemrow">
+            <div class="col-md-5 noleftpad">
+              <div id="player{{item.id}}" align="center">
+                <img src="{{item.snippet.thumbnails.high.url}}"
+                  ng-click="play(item)" class="ytImage" height="180" width="240">
+              </div>
+            </div>
+
+            <div class="col-md-7">
+              <h5>
+                <a href='https://youtube.com/watch?v={{item.id}}' target="_blank">
+                  {{item.snippet.title}}
+                </a>
+              </h5>
+              <h5>
+                <a href='https://youtube.com/channel/{{item.snippet.channelId}}' target="_blank">
+                  {{item.snippet.channelTitle}}
+                </a>
+              </h5>
+              <h5>
+                Views: <b id="views-{{item.id}}">
+                {{getViewCount(item.statistics.viewCount,item.id)}}</b>
+              </h5>
+              <div class="progress" data-toggle="tooltip" data-placement="right"
+                title="{{getLd(item.statistics)}}%">
+                <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0"
+                  aria-valuemax="100" style="width: {{getLd(item.statistics)}}%" id="ld-{{item.id}}">
+                </div>
+              </div>
+              <h5>
+                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                {{getTime(item.contentDetails.duration)}}
+                <h3>
+                  <span ng-if="item.contentDetails.definition === 'hd'"
+                  class="glyphicon glyphicon-hd-video" aria-hidden="true"></span>
+                  <span ng-if="item.contentDetails.caption === 'true'"
+                  class="glyphicon glyphicon-subtitles" aria-hidden="true"></span>
+                </h3>
+              </h5>
+            </div>
+          </div>
+        </li>
+
+      </div>
+
+    </div>
+  </body>
+</html>

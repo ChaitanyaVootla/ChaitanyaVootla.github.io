@@ -1,20 +1,19 @@
-var myApp = angular.module('yt',[]);
+var myApp = angular.module('ytSearch',[]);
 
-myApp.controller('ytCtrl', function($scope, $http, $sce) {
+myApp.controller('ytSearchCtrl', function($scope, $http, $sce, $location) {
 	$scope.title = "YouTube";
 	$scope.suggestions = [];
 	$scope.loading = true;
-  $scope.regionName={
-    Code: 'IN',
-    Name: 'India'
-  }
   $scope.searchString = '';
   $scope.nextPageToken = '';
   $scope.modeSearch = false;
   $scope.prevSearch = '';
   $scope.playing = false;
   $scope.currItem = {};
-  $scope.totalResults = null; 
+  $scope.totalResults = null;
+  $scope.relevanceClass = 'mainTab-active';
+  $scope.dateClass = 'mainTab';
+  $scope.popularClass = 'mainTab';
 
 
 	$scope.loadSuggestions = function(){
@@ -25,63 +24,10 @@ myApp.controller('ytCtrl', function($scope, $http, $sce) {
     });
 	}
 
-
-  $scope.getPopular = function(loadMore, regionName){
-    $scope.modeSearch = false;
-    $scope.playing = false;
-    $scope.regionUrl = '&regionCode=' + $scope.regionName.Code;
-    if(!loadMore){
-      $scope.nextPageToken = '';
-    }
-    $scope.regionUrl = '&regionCode=' + regionName.Code;
-    $scope.loading = true;
-    var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&chart=mostpopular&pageToken="+$scope.nextPageToken+"&maxResults=20"+$scope.regionUrl+"&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8&callback=JSON_CALLBACK";
-    $http.jsonp(url).then(function(response) {
-      if(!loadMore){
-        $scope.results = [];
-        for (var i=0; i<response.data.items.length/2; i++){
-          $scope.results[i] = [];
-          $scope.results[i][0] = response.data.items[i*2];
-          $scope.results[i][1] = response.data.items[i*2+1];
-        }
-        console.log($scope.results);
-      }
-      else{
-        var len = $scope.results.length;
-        for (var i=len; i<len
-          + response.data.items.length/2; i++){
-          $scope.results[i] = [];
-          $scope.results[i][0] = response.data.items[(i-len)*2];
-          $scope.results[i][1] = response.data.items[(i-len)*2+1];
-        }
-        console.log($scope.results);
-      }
-      
-      $scope.nextPageToken = response.data.nextPageToken; 
-      $scope.loading = false;
-    });
-  }
-
   $scope.init = function(){
-
-    onYouTubeIframeAPIReady = function () {
-      console.log("ytready");
-    };
-
-    $http.get('http://data.okfn.org/data/core/country-list/r/data.json')
-    .then(function(response) {
-      $scope.countrycodes = response.data;
-      //document.getElementById("sel1").options[document.getElementById("sel1").selectedIndex].text = "India";
-      $scope.regionName={
-        Code: 'IN',
-        Name: 'India'
-      }
-    });
-
-    $scope.getPopular(false,{
-      Code: 'IN',
-      Name: 'India'
-    });
+    console.log(window.location.search.replace("?q=",""));
+    $scope.searchString = window.location.search.replace("?q=","").split('%20').join(' ');
+    $scope.search(false,'relevance');
   }
 
   $scope.getUploadDate = function(date){
@@ -156,20 +102,15 @@ myApp.controller('ytCtrl', function($scope, $http, $sce) {
     return str;
   }
 
-  $scope.set = function(regionName){
-    $scope.getPopular(false,regionName);
-  }
-
-  $scope.search = function(loadMore){
-    $scope.playing = false;
+  $scope.search = function(loadMore, searchOrder){
     $scope.modeSearch = true;
-    console.log("loadMore");
     if(!loadMore){
       $scope.nextPageToken = '';
       $scope.prevSearch = $scope.searchString;
+      $scope.totalResults = null
     }
     $scope.loading = true;
-    var url = "https://www.googleapis.com/youtube/v3/search?order=relevance&part=snippet&q="+$scope.prevSearch+"&pageToken="+$scope.nextPageToken+"&type=video&videoSyndicated=true&maxResults=10&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8&callback=JSON_CALLBACK";
+    var url = "https://www.googleapis.com/youtube/v3/search?order="+searchOrder+"&part=snippet&q="+$scope.prevSearch+"&pageToken="+$scope.nextPageToken+"&type=video&videoSyndicated=true&maxResults=10&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8&callback=JSON_CALLBACK";
     $http.jsonp(url).then(function(response) {
       var ids = '';
       for (var i = 0; i < response.data.items.length; i++) {
@@ -177,11 +118,9 @@ myApp.controller('ytCtrl', function($scope, $http, $sce) {
         ids += response.data.items[i].id+',';
       }
       $scope.nextPageToken = response.data.nextPageToken;
-      $scope.totalResults = response.data.pageInfo.totalResults; 
-      $scope.loading = false;
+      $scope.totalResults = response.data.pageInfo.totalResults;
       var urlStats = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id="+ids+"&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8&callback=JSON_CALLBACK";
       $http.jsonp(urlStats).then(function(responseStats) {
-        console.log(url,response,urlStats,responseStats);
         for (var i = responseStats.data.items.length - 1; i >= 0; i--) {
           response.data.items[i].statistics = responseStats.data.items[i].statistics;
           response.data.items[i].contentDetails = responseStats.data.items[i].contentDetails;
@@ -193,7 +132,6 @@ myApp.controller('ytCtrl', function($scope, $http, $sce) {
             $scope.results[i][0] = responseStats.data.items[i*2];
             $scope.results[i][1] = responseStats.data.items[i*2+1];
           }
-          console.log($scope.results);
         }
         else{
           var len = $scope.results.length;
@@ -203,43 +141,36 @@ myApp.controller('ytCtrl', function($scope, $http, $sce) {
             $scope.results[i][0] = responseStats.data.items[(i-len)*2];
             $scope.results[i][1] = responseStats.data.items[(i-len)*2+1];
           }
-          console.log($scope.results);
         }
+        $scope.loading = false;
       });
     });
   }
 
-  $scope.go = function(regionName){
-    if($scope.modeSearch === true)
-      $scope.search(true);
-    else{
-      console.log("gettting pop");
-      $scope.getPopular(true,regionName);
+  $scope.go = function(){
+    window.location = 'search.html?q=' + $scope.searchString;
+  }
+
+  $scope.play = function(item){
+    window.location = 'video.html?id=' + item.id;
+  }
+
+  $scope.setClass = function(item){
+    if(item === 'relevance'){
+      $scope.relevanceClass = 'mainTab-active';
+      $scope.dateClass = 'mainTab';
+      $scope.popularClass = 'mainTab';
+    }
+    if(item === 'date'){
+      $scope.dateClass = 'mainTab-active';
+      $scope.relevanceClass = 'mainTab';
+      $scope.popularClass = 'mainTab';
+    }
+    if(item === 'popular'){
+      $scope.popularClass = 'mainTab-active';
+      $scope.dateClass = 'mainTab';
+      $scope.relevanceClass = 'mainTab';
     }
   }
-
-  $scope.loadIframe = function(){
-    console.log(" clicked");
-    function onPlayerReady(event){
-      event.target.playVideo();
-    }
-    player = new YT.Player('asd', {
-      height: '700',
-      width: '1200',
-      videoId: $scope.currItem.id,
-      events: {
-        'onReady': onPlayerReady,
-        'onStateChange': onPlayerReady
-      }
-    });
-  }
-
-  $scope.setCurr = function(item){
-    $scope.playing = true;
-    $scope.currItem = item;
-  }
-
-  $scope.goBack = function(){
-    $scope.playing = false;
-  }
+  
 });

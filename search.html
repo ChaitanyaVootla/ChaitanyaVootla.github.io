@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 
-<html lang="en" ng-app="yt">
+<html lang="en" ng-app="ytSearch">
   <head>
     <title>YouTube</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
-  <body ng-controller="ytCtrl" ng-init="init()">
+  <body ng-controller="ytSearchCtrl" ng-init="init()">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
     <script src="js/angular.min.js"></script>
-    <script src="app.js"></script>
-    <script src="js/jquery.min.js"></script>
+    <script src="ytSearch.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script src="https://www.youtube.com/player_api"></script>
+    <link href='https://fonts.googleapis.com/css?family=Titillium+Web:600'
+      rel='stylesheet' type='text/css'>
 
     <!--       Navbar      -->
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -21,7 +21,7 @@
         <div class="navbar-header">
           <a ng-click="goBack()" href="#" ng-if="playing"><span class="glyphicon glyphicon-chevron-left
             leftArrow navbar-brand" aria-hidden="true"></span></a>
-          <a class="navbar-brand" ng-click="getPopular(false)" href="#" id="home">{{title}}</a>
+          <a class="navbar-brand" ng-click="getPopular(false)" href="index.html" id="home">{{title}}</a>
         </div>
 
         <div id="navbar" class="navbar-collapse collapse searchBar">
@@ -35,7 +35,7 @@
                     </option>
         				</datalist>
         				<div class="input-group-btn">
-        					<button class="btn btn-default" ng-click="search(false)" type="submit">Go</button>
+        					<button class="btn btn-default" ng-click="go()" type="submit">Go</button>
         				</div>
         			</div>
       			</form>
@@ -51,87 +51,58 @@
       </div>
     </nav>
 
-    <!--       Player Code       -->
-
-    <ul class="list-group" ng-if="playing">
-      <div class="row playrow">
-        <div class="tpmargin">
-          <div id="asd" align="center" ng-init="loadIframe()">
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-2">
-        </div>
-        <div class="col-md-6">
-          <h3>
-            <a href='https://youtube.com/watch?v={{currItem.id}}' target="_blank">
-              {{currItem.snippet.title}}
-            </a>
-          </h3>
-          <h4>
-            <a href='https://youtube.com/channel/{{currItem.snippet.channelId}}' target="_blank">
-              {{currItem.snippet.channelTitle}}
-            </a>
-          </h4>
-          <h4>
-            {{getUploadDate(currItem.snippet.publishedAt)}}
-          </h4>
-        </div>
-        <div class="col-md-4">
-          <h3>
-            <b id="views-{{currItem.id}}">{{getViewCount(currItem.statistics.viewCount,currItem.id)}}</b>
-            Views
-          </h3>
-          <div class="progress" data-toggle="tooltip" data-placement="right"
-            title="{{getLd(currItem.statistics)}}%">
-            <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0"
-              aria-valuemax="100" style="width: {{getLd(currItem.statistics)}}%" id="ld-{{currItem.id}}">
-            </div>
-          </div>
-          <h4>
-            <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
-            {{currItem.statistics.commentCount}}
-          </h4>
-        </div>
-      </div>
-    </ul>
-
     <!--        Main Content       -->
-    <ul class="list-group" id="list" ng-if="!playing">
-      <li class="list-group-item" ng-if="!modeSearch">
-        <h3 align="center">Popular Now on YouTube {{regionName.Name}}
-          <div class="form-group" ng-if="false">
-            <select class="form-control" ng-model="regionName"
-            ng-options="country as country.Name for country in countrycodes track by country.Code"
-              ng-change="set(regionName)">
-            </select>
-          </div>
-          <div class="row">
-            <div class="col-md-3">
-              
-            </div>
-          </div>
-        </h3>
-      </li>
-      <li class="list-group-item" ng-if="modeSearch">
-        <h3 align="center">Search results for {{prevSearch}}
+
+    <ul class="list-group" id="list">
+
+      <li class="list-group-item nopadding-bottom" style="padding-top: 3px; padding-bottom:0px">
+        <h3 align="center">Search results for
+        <span style="color: #551A8B">'{{prevSearch}}'</span>
         </h3>
         <h5 align="center">
           {{getResultsCount(totalResults)}} results
         </h5>
       </li>
+
+      <div class="row">
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-2">
+          <div align="center" ng-click="search(false,'viewCount'); setClass('popular')" class="{{popularClass}}">
+            popular
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div align="center" class="mainTab">
+            hybrid
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div align="center" ng-click="search(false,'relevance'); setClass('relevance')"
+            class="{{relevanceClass}}">
+            relevance
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div align="center" ng-click="search(false,'date'); setClass('date')" class="{{dateClass}}">
+            date
+          </div>
+        </div>
+        <div class="col-md-2">
+        </div>
+      </div>
+      <hr style="margin: 5px;">
       <li ng-repeat="item in results" class="list-group-item" ng-if="!loading">
         <div class="row itemrow">
 
-          <div class="col-md-3">
+          <div class="col-md-3 item">
             <div id="player{{item[0].id}}" align="center">
               <img src="{{item[0].snippet.thumbnails.high.url}}"
-                ng-click="setCurr(item[0])" class="ytImage" height="250" width="333.333">
+                ng-click="play(item[0])" class="ytImage" height="250" width="333.333">
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-3 item-right">
             <h4>
               <a href='https://youtube.com/watch?v={{item[0].id}}' target="_blank">
                 {{item[0].snippet.title}}
@@ -162,7 +133,7 @@
             <h5>
               <h4><span class="glyphicon glyphicon-time" aria-hidden="true"></span>
               {{getTime(item[0].contentDetails.duration)}}</h4>
-              <h3>
+              <h3 class="hc">
                 <span ng-if="item[0].contentDetails.definition === 'hd'"
                 class="glyphicon glyphicon-hd-video" aria-hidden="true"></span>
                 <span ng-if="item[0].contentDetails.caption === 'true'"
@@ -171,14 +142,14 @@
             </h5>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-3 item">
             <div id="player{{item[1].id}}" align="center">
               <img src="{{item[1].snippet.thumbnails.high.url}}"
-                ng-click="setCurr(item[1])" class="ytImage" height="250" width="333.333">
+                ng-click="play(item[1])" class="ytImage" height="250" width="333.333">
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-3 item-right">
             <h4>
               <a href='https://youtube.com/watch?v={{item[1].id}}' target="_blank">
                 {{item[1].snippet.title}}
@@ -196,7 +167,7 @@
               Views: <b id="views-{{item[1].id}}">{{getViewCount(item[1].statistics.viewCount,item[1].id)}}</b>
             </h5>
             <div class="progress" data-toggle="tooltip" data-placement="right"
-              title="{{getLd(item[0].statistics)}}%">
+              title="{{getLd(item[1].statistics)}}%">
               <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0"
                 aria-valuemax="100" style="width: {{getLd(item[1].statistics)}}%" id="ld-{{item[1].id}}">
               </div>
@@ -208,7 +179,7 @@
             <h5>
               <h4><span class="glyphicon glyphicon-time" aria-hidden="true"></span>
               {{getTime(item[1].contentDetails.duration)}}</h4>
-              <h3>
+              <h3 class="hc">
                 <span ng-if="item[1].contentDetails.definition === 'hd'"
                 class="glyphicon glyphicon-hd-video" aria-hidden="true"></span>
                 <span ng-if="item[1].contentDetails.caption === 'true'"
@@ -219,7 +190,7 @@
 
         </div>
       </li>
-      <li class="list-group-item" id="more" ng-click="go(regionName)" ng-if="!loading">
+      <li class="list-group-item" id="more" ng-click="search(true)" ng-if="!loading">
         <div align="center">
           <button class="btn btn-default">Load More</button>
         </div>

@@ -1,0 +1,9 @@
+<script src="js/angular.min.js"></script>
+<script src="app2.js"></script>
+
+<body ng-app='yt' ng-controller="ytCtrl2" ng-init="init()">
+<select class="form-control" ng-model="regionName"
+    ng-options="country.Name for country in countrycodes track by country.Code" ng-change="set()">
+  </select>
+  {{regionName}}
+</body>

@@ -1,3 +1,7 @@
+body{
+	font-family: 'Titillium Web', sans-serif;
+}
+
 .proj{
 	height:200px;
 	border-style: solid;
@@ -80,6 +84,10 @@
   margin-top: 3%;
 }
 
+.tpmargin{
+  margin-top: 3%;
+}
+
 .navbar-form{
 	width:100%;
 }
@@ -118,6 +126,12 @@ iframe, .ytImage{
   margin: auto;
 }
 
+.ytImage{
+  display: block;
+  margin: auto;
+  border-radius: 1.5%;
+}
+
 .million{
   color: #104E8B;
 }
@@ -131,5 +145,83 @@ iframe, .ytImage{
   right: 42%;
 }
 
-.countriesDropdown{
+.playrow{
+	background-color: #000;
+}
+
+.searchBar{
+	margin-left: 37% !important;
+}
+
+.leftArrow{
+	color: #fff;
+	padding-top: 13px;
+	padding-right: 20px;
+}
+
+.glyphicon-hd-video{
+	color: #b44;
+}
+
+.list-group-item{
+	border: 0px;
+}
+
+.noleftpad{
+	padding-left: 0px;
+}
+
+.channelImg{
+	padding-top: 15px;
+	border-radius: 25px;
+}
+
+.channeldet{
+	padding-left: 50px;
+}
+
+.badge{
+	background-color: #333;
+}
+
+.glyphicon-thumbs-up{
+	color: black;
+}
+
+.cmntImg{
+	border-radius: 10px;
+}
+
+.item{
+	padding-left: 20px;
+}
+
+.item-right{
+	padding-right: 20px;
+}
+
+.hc{
+	font-size: 26px;
+}
+
+.tabActive{
+	background: #66d;
+	color: white;
+}
+
+.mainTab-active{
+	background-color: #44a;
+	color: white;
+	border-top-right-radius: 50px;
+	border-top-left-radius: 50px;
+	cursor: pointer;
+}
+
+
+.mainTab{
+	background-color: rgb(245,245,245);	
+	color: #111;
+	border-top-right-radius: 50px;
+	border-top-left-radius: 50px;
+	cursor: pointer;
 }
