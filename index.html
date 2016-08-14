@@ -56,15 +56,14 @@
 
     <ul class="list-group" id="list" ng-if="!playing">
       <li class="list-group-item" ng-if="!modeSearch">
-        <h3 align="center">Popular Now on YouTube {{regionName.Name}}
+        <h4 align="center">Popular Now on YouTube {{regionName.Name}}
           <!-- <div class="form-group">
             <select class="form-control" ng-model="regionName"
             ng-options="country as country.Name for country in countrycodes track by country.Code"
               ng-change="set(regionName)">
             </select>
           </div> -->
-          <hr>
-        </h3>
+        </h4>
       </li>
 
       <li ng-repeat="item in results" class="list-group-item" ng-if="!loading">
@@ -73,94 +72,94 @@
           <div class="col-md-3 item">
             <div id="player{{item[0].id}}" align="center">
               <img src="{{item[0].snippet.thumbnails.high.url}}"
-                ng-click="play(item[0])" class="ytImage" height="250" width="333.333">
+                ng-click="play(item[0])" class="ytImage" width="100%">
             </div>
           </div>
 
           <div class="col-md-3 item-right">
-            <h4>
+            <h5 style="margin-top: 0px;">
               <a href='https://youtube.com/watch?v={{item[0].id}}' target="_blank">
                 {{item[0].snippet.title}}
               </a>
-            </h4>
-            <h5>
+            </h5>
+            <h6>
               <a href='https://youtube.com/channel/{{item[0].snippet.channelId}}' target="_blank">
                 {{item[0].snippet.channelTitle}}
               </a>
-            </h5>
-            <h5>
+            </h6>
+            <h6>
               {{getUploadDate(item[0].snippet.publishedAt)}}
-            </h5>
-            <h5>
+            </h6>
+            <h6>
               Views: <b id="views-{{item[0].id}}">
               {{getViewCount(item[0].statistics.viewCount,item[0].id)}}</b>
-            </h5>
+            </h6>
             <div class="progress" data-toggle="tooltip" data-placement="right"
               title="{{getLd(item[0].statistics)}}%">
               <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0"
                 aria-valuemax="100" style="width: {{getLd(item[0].statistics)}}%" id="ld-{{item[0].id}}">
               </div>
             </div>
-            <h5>
+            <h6>
               <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
               {{item[0].statistics.commentCount}}
-            </h5>
-            <h5>
-              <h4><span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-              {{getTime(item[0].contentDetails.duration)}}</h4>
-              <h3>
+            </h6>
+            <h6>
+              <h5><span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+              {{getTime(item[0].contentDetails.duration)}}</h5>
+              <h6 class="hc">
                 <span ng-if="item[0].contentDetails.definition === 'hd'"
                 class="glyphicon glyphicon-hd-video" aria-hidden="true"></span>
                 <span ng-if="item[0].contentDetails.caption === 'true'"
                 class="glyphicon glyphicon-subtitles" aria-hidden="true"></span>
-              </h3>
-            </h5>
+              </h6>
+            </h6>
           </div>
 
           <div class="col-md-3 item">
             <div id="player{{item[1].id}}" align="center">
               <img src="{{item[1].snippet.thumbnails.high.url}}"
-                ng-click="play(item[1])" class="ytImage" height="250" width="333.333">
+                ng-click="play(item[1])" class="ytImage" width="100%">
             </div>
           </div>
 
           <div class="col-md-3 item-right">
-            <h4>
+            <h5 style="margin-top: 0px;">
               <a href='https://youtube.com/watch?v={{item[1].id}}' target="_blank">
                 {{item[1].snippet.title}}
               </a>
-            </h4>
-            <h5>
+            </h5>
+            <h6>
               <a href='https://youtube.com/channel/{{item[1].snippet.channelId}}' target="_blank">
                 {{item[1].snippet.channelTitle}}
               </a>
-            </h5>
-            <h5>
+            </h6>
+            <h6>
               {{getUploadDate(item[1].snippet.publishedAt)}}
-            </h5>
-            <h5>
+            </h6>
+            <h6>
               Views: <b id="views-{{item[1].id}}">{{getViewCount(item[1].statistics.viewCount,item[1].id)}}</b>
-            </h5>
+            </h6>
             <div class="progress" data-toggle="tooltip" data-placement="right"
               title="{{getLd(item[1].statistics)}}%">
               <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0"
                 aria-valuemax="100" style="width: {{getLd(item[1].statistics)}}%" id="ld-{{item[1].id}}">
               </div>
             </div>
-            <h5>
+            <h6>
               <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
               {{item[1].statistics.commentCount}}
-            </h5>
-            <h5>
-              <h4><span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-              {{getTime(item[1].contentDetails.duration)}}</h4>
-              <h3>
+            </h6>
+            <h6>
+              <h5><span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+              {{getTime(item[1].contentDetails.duration)}}</h5>
+              <h6 class="hc">
                 <span ng-if="item[1].contentDetails.definition === 'hd'"
                 class="glyphicon glyphicon-hd-video" aria-hidden="true"></span>
                 <span ng-if="item[1].contentDetails.caption === 'true'"
                 class="glyphicon glyphicon-subtitles" aria-hidden="true"></span>
-              </h3>
-            </h5>
+              </h6>
+            </h6>
           </div>
 
         </div>

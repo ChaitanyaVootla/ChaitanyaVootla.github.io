@@ -14,6 +14,8 @@ myApp.controller('ytSearchCtrl', function($scope, $http, $sce, $location) {
   $scope.relevanceClass = 'mainTab-active';
   $scope.dateClass = 'mainTab';
   $scope.popularClass = 'mainTab';
+  $scope.hybridClass = 'mainTab';
+  $scope.isHybrid = false;
 
 
 	$scope.loadSuggestions = function(){
@@ -103,11 +105,15 @@ myApp.controller('ytSearchCtrl', function($scope, $http, $sce, $location) {
   }
 
   $scope.search = function(loadMore, searchOrder){
+    $scope.isHybrid = false
     $scope.modeSearch = true;
     if(!loadMore){
       $scope.nextPageToken = '';
       $scope.prevSearch = $scope.searchString;
       $scope.totalResults = null
+      $scope.totalLikes = 0;
+      $scope.totalDislikes = 0;
+      $scope.nlp = '';
     }
     $scope.loading = true;
     var url = "https://www.googleapis.com/youtube/v3/search?order="+searchOrder+"&part=snippet&q="+$scope.prevSearch+"&pageToken="+$scope.nextPageToken+"&type=video&videoSyndicated=true&maxResults=10&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8&callback=JSON_CALLBACK";
@@ -131,6 +137,12 @@ myApp.controller('ytSearchCtrl', function($scope, $http, $sce, $location) {
             $scope.results[i] = [];
             $scope.results[i][0] = responseStats.data.items[i*2];
             $scope.results[i][1] = responseStats.data.items[i*2+1];
+            $scope.totalLikes += parseInt(responseStats.data.items[i*2].statistics.likeCount);
+            $scope.totalLikes +=  parseInt(responseStats.data.items[i*2+1].statistics.likeCount);
+            $scope.totalDislikes +=  parseInt(responseStats.data.items[i*2].statistics.dislikeCount);
+            $scope.totalDislikes +=  parseInt(responseStats.data.items[i*2+1].statistics.dislikeCount);
+            $scope.nlp += ' '+responseStats.data.items[i*2].snippet.title;
+            $scope.nlp += ' '+responseStats.data.items[i*2+1].snippet.title;
           }
         }
         else{
@@ -142,6 +154,57 @@ myApp.controller('ytSearchCtrl', function($scope, $http, $sce, $location) {
             $scope.results[i][1] = responseStats.data.items[(i-len)*2+1];
           }
         }
+        $scope.loading = false;
+        console.log(nlp_compromise.text($scope.nlp).places());
+      });
+    });
+  }
+
+  $scope.searchHybrid = function(loadMore){
+    $scope.modeSearch = true;
+    if(!loadMore){
+      $scope.nextPageToken = '';
+      $scope.prevSearch = $scope.searchString;
+      $scope.totalResults = null
+      $scope.isHybrid = true;
+      $scope.totalLikes = 0;
+      $scope.totalDislikes = 0;
+    }
+    $scope.loading = true;
+    var url = "https://www.googleapis.com/youtube/v3/search?order=viewCount&part=snippet&q="+$scope.prevSearch+"&pageToken="+$scope.nextPageToken+"&type=video&videoSyndicated=true&maxResults=10&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8&callback=JSON_CALLBACK";
+    $http.jsonp(url).then(function(response) {
+      var ids = '';
+      for (var i = 0; i < response.data.items.length; i++) {
+        response.data.items[i].id = response.data.items[i].id.videoId;
+        ids += response.data.items[i].id+',';
+      }
+      $scope.nextPageToken = response.data.nextPageToken;
+      $scope.totalResults = response.data.pageInfo.totalResults;
+      var urlStats = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id="+ids+"&key=AIzaSyCeFO-T8BMXKLAJSzSO19B8gtc8sb6WDS8&callback=JSON_CALLBACK";
+      $http.jsonp(urlStats).then(function(responseStats) {
+        var results = [];
+        for (var i = 0; i < responseStats.data.items.length; i++) {
+          if($scope.getLd(responseStats.data.items[i].statistics) > 90){
+            console.log($scope.getLd(responseStats.data.items[i].statistics));
+            $scope.totalLikes += parseInt(responseStats.data.items[i].statistics.likeCount);
+            $scope.totalDislikes += parseInt(responseStats.data.items[i].statistics.dislikeCount);
+            results.push(responseStats.data.items[i]);
+          }
+        }
+        if(!loadMore){
+          $scope.results = [];
+          $scope.results = results;
+          console.log($scope.results);
+        }
+        /*else{
+          var len = $scope.results.length;
+          for (var i=len; i<len
+            + responseStats.data.items.length/2; i++){
+            $scope.results[i] = [];
+            $scope.results[i][0] = responseStats.data.items[(i-len)*2];
+            $scope.results[i][1] = responseStats.data.items[(i-len)*2+1];
+          }
+        }*/
         $scope.loading = false;
       });
     });
@@ -160,17 +223,30 @@ myApp.controller('ytSearchCtrl', function($scope, $http, $sce, $location) {
       $scope.relevanceClass = 'mainTab-active';
       $scope.dateClass = 'mainTab';
       $scope.popularClass = 'mainTab';
+      $scope.hybridClass = 'mainTab';
     }
     if(item === 'date'){
       $scope.dateClass = 'mainTab-active';
       $scope.relevanceClass = 'mainTab';
       $scope.popularClass = 'mainTab';
+      $scope.hybridClass = 'mainTab';
     }
     if(item === 'popular'){
       $scope.popularClass = 'mainTab-active';
       $scope.dateClass = 'mainTab';
       $scope.relevanceClass = 'mainTab';
+      $scope.hybridClass = 'mainTab';
     }
+    if(item === 'hybrid'){
+      $scope.hybridClass = 'mainTab-active';
+      $scope.dateClass = 'mainTab';
+      $scope.relevanceClass = 'mainTab';
+      $scope.popularClass = 'mainTab';
+    }
+  }
+
+  $scope.getPageLd = function(totalLikes,totalDislikes){
+    return Math.floor($scope.totalLikes/($scope.totalDislikes + $scope.totalLikes)*100);
   }
   
 });
