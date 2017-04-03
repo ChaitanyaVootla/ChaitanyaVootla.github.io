@@ -1,0 +1,25 @@
+{
+  "name": "nodemine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "forever start nodeApp.js"
+  },
+  "dependencies": {
+    "express": "*",
+    "path": "*",
+    "child_process": "*",
+    "forever": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChaitanyaVootla/ChaitanyaVootla.github.io.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChaitanyaVootla/ChaitanyaVootla.github.io/issues"
+  },
+  "homepage": "https://github.com/ChaitanyaVootla/ChaitanyaVootla.github.io#readme"
+}
